@@ -13,8 +13,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 
 public class MainActivity extends AppCompatActivity{
@@ -43,13 +45,37 @@ public class MainActivity extends AppCompatActivity{
     }
 
     Observable<String> forFrom;
+    Observable<Memo> forJust;
+    Observable<String> forDefer;
     private void initObservable(){    // 초기화
+        // from 생성
         String fromData[] = {"aa","bb","cc","dd","ee","ff"};
         forFrom = Observable.fromArray(fromData);   // 발행할 준비
+
+        // just 생성
+        Memo memo1 = new Memo("hi");
+        Memo memo2 = new Memo("hi2");
+        Memo memo3 = new Memo("hi3");
+        Memo memo4 = new Memo("hi4");
+        forJust = Observable.just(memo1,memo2,memo3,memo4);
+
+        // defer 생성
+        forDefer = Observable.defer(new Callable<ObservableSource<? extends String>>() {
+            @Override
+            public ObservableSource<? extends String> call() throws Exception {
+                return Observable.just("one","two","three","four");
+            }
+        });
+
     }
 
     // xml 에서 바인드함
     public void btnJust(View v){
+        forJust.subscribe(
+                obj -> datas.add(obj.memo),
+                t   -> {/*일단 아무것도 안함 */},
+                ()  -> adapter.notifyDataSetChanged()
+        );
 
     }
 
@@ -62,7 +88,20 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void btnDefer(View v){
+        forDefer.subscribe(
+                str -> datas.add(str),
+                t   -> {/*일단 아무것도 안함 */},
+                ()  -> adapter.notifyDataSetChanged()
+        );
 
+    }
+}
+
+// just 생성자를 위한 클래스
+class Memo {
+    String memo;
+    public Memo (String memo){
+        this.memo = memo;
     }
 }
 
