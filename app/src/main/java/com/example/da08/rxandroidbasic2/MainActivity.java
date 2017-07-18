@@ -47,10 +47,10 @@ public class MainActivity extends AppCompatActivity{
     Observable<String> forFrom;
     Observable<Memo> forJust;
     Observable<String> forDefer;
-    private void initObservable(){    // 초기화
+    private void initObservable(){    // 발행할 준비
         // from 생성
         String fromData[] = {"aa","bb","cc","dd","ee","ff"};
-        forFrom = Observable.fromArray(fromData);   // 발행할 준비
+        forFrom = Observable.fromArray(fromData);   // 데이터 length 확인
 
         // just 생성
         Memo memo1 = new Memo("hi");
@@ -70,16 +70,16 @@ public class MainActivity extends AppCompatActivity{
     }
 
     // xml 에서 바인드함
-    public void btnJust(View v){
+    public void btnJust(View v){  // 객체 하나,하나를 넘김
         forJust.subscribe(
-                obj -> datas.add(obj.memo),
+                obj -> datas.add(obj.content),   // onNext와 같은 의미
                 t   -> {/*일단 아무것도 안함 */},
-                ()  -> adapter.notifyDataSetChanged()
+                ()  -> adapter.notifyDataSetChanged()    // onComplete와 같은 의미
         );
 
     }
 
-    public void btnFrom(View v){
+    public void btnFrom(View v){   // datas를 넘겨주는
         forFrom.subscribe(
                 str -> datas.add(str),                  // 옵저버블(발행자 : emitter)로부터 데이터를 가져옴
                 t   -> {/*일단 아무것도 안함 */},
@@ -99,9 +99,9 @@ public class MainActivity extends AppCompatActivity{
 
 // just 생성자를 위한 클래스
 class Memo {
-    String memo;
+    String content;
     public Memo (String memo){
-        this.memo = memo;
+        this.content = memo;
     }
 }
 
